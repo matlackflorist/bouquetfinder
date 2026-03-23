@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Find Your Bouquet — Matlack Florist</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ── ROOT ─────────────────────────────── */
+:root {
+  --cream:    #faf7f2;
+  --parchment:#f2e8d8;
+  --blush:    #e8c4b4;
+  --rose:     #c4806a;
+  --burgundy: #7a3040;
+  --deep:     #2a1a1e;
+  --sage:     #7a9278;
+  --gold:     #b8983c;
+  --mid:      #6a4a4a;
+  --border:   #e0d4c8;
+  --text:     #2a1a1e;
+  --muted:    #8a7070;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+  font-size: 15px;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* subtle parchment texture via gradient */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(232,196,180,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 90% 100%, rgba(122,48,64,.08) 0%, transparent 55%);
+}
+
+.shell { position:relative; z-index:1; min-height:100dvh; display:flex; flex-direction:column; }
+
+/* ── HEADER ──────────────────────────── */
+header {
+  padding: 24px 28px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: rgba(250,247,242,.92);
+  backdrop-filter: blur(8px);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem; font-style: italic; font-weight: 400;
+  color: var(--burgundy); letter-spacing:.02em; text-decoration:none;
+}
+.header-link {
+  font-size: .72rem; letter-spacing:.12em; text-transform:uppercase;
+  color: var(--muted); text-decoration:none; transition:color .2s;
+}
+.header-link:hover { color: var(--burgundy); }
+
+/* ── HERO ────────────────────────────── */
+.hero {
+  padding: 52px 24px 40px;
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  font-size: .72rem; letter-spacing:.22em; text-transform:uppercase;
+  color: var(--gold); margin-bottom:16px;
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(2.8rem, 7vw, 4rem);
+  line-height: 1.0; letter-spacing:-.02em;
+  color: var(--deep); margin-bottom:18px;
+}
+.hero-title em { font-style:italic; color:var(--burgundy); display:block; }
+.hero-sub {
+  font-size: .85rem; line-height:1.85;
+  color: var(--muted); max-width:440px; margin:0 auto;
+}
+
+/* ── STEPS CONTAINER ─────────────────── */
+.steps {
+  flex:1; max-width:780px; width:100%;
+  margin:0 auto; padding:0 20px 60px;
+}
+
+/* ── PROGRESS ────────────────────────── */
+.progress-row {
+  display:flex; justify-content:center; gap:8px; margin:0 0 32px;
+}
+.pdot {
+  width:7px; height:7px; border-radius:50%;
+  background: var(--border); transition:background .3s, transform .3s;
+}
+.pdot.done  { background: var(--sage); }
+.pdot.active { background: var(--burgundy); transform:scale(1.5); }
+
+/* ── STEP CARD ───────────────────────── */
+.step-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 30px 26px 34px;
+  margin-bottom: 16px;
+  opacity: 0; transform: translateY(18px);
+  transition: opacity .4s ease, transform .4s ease, border-color .2s,
+              box-shadow .2s;
+  box-shadow: 0 2px 12px rgba(42,26,30,.04);
+}
+.step-card.visible  { opacity:1; transform:translateY(0); }
+.step-card.active   { border-color: rgba(122,48,64,.3); box-shadow:0 4px 20px rgba(122,48,64,.07); }
+.step-card.completed { border-color: rgba(122,146,120,.3); }
+
+.step-header { display:flex; align-items:baseline; gap:12px; margin-bottom:24px; }
+.step-num {
+  font-family:'Cormorant Garamond',serif; font-size:.8rem;
+  font-weight:300; color:var(--rose); letter-spacing:.08em;
+}
+.step-label {
+  font-family:'Cormorant Garamond',serif; font-size:1.5rem;
+  font-weight:300; color:var(--deep);
+}
+.step-label em { font-style:italic; color:var(--burgundy); }
+
+/* ── COLOR SWATCHES ──────────────────── */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+}
+.color-swatch {
+  cursor:pointer; display:flex; flex-direction:column;
+  align-items:center; gap:8px; padding:10px 4px;
+  border:1.5px solid transparent;
+  transition:border-color .18s, transform .18s, background .18s;
+  border-radius:4px;
+  -webkit-tap-highlight-color:transparent;
+}
+.color-swatch:hover { transform:translateY(-2px); background:var(--parchment); }
+.color-swatch.selected { border-color:var(--burgundy); background:rgba(122,48,64,.05); }
+.color-swatch.selected .swatch-dot {
+  box-shadow: 0 0 0 2.5px #fff, 0 0 0 4.5px var(--burgundy);
+}
+.swatch-dot {
+  width:40px; height:40px; border-radius:50%;
+  border:1px solid rgba(0,0,0,.1); flex-shrink:0;
+  transition:box-shadow .18s;
+}
+.swatch-name {
+  font-size:.65rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted); text-align:center; line-height:1.3;
+}
+.color-swatch.selected .swatch-name { color:var(--burgundy); font-weight:400; }
+
+/* ── STYLE BUTTONS ───────────────────── */
+.style-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+@media(min-width:480px){
+  .style-grid { grid-template-columns:repeat(4,1fr); }
+}
+.style-btn {
+  cursor:pointer; background:#fff;
+  border:1.5px solid var(--border);
+  padding:18px 12px 16px; text-align:center;
+  transition:border-color .18s, background .18s, transform .18s;
+  -webkit-tap-highlight-color:transparent;
+}
+.style-btn:hover { border-color:rgba(122,48,64,.35); transform:translateY(-1px); background:var(--parchment); }
+.style-btn.selected { border-color:var(--burgundy); background:rgba(122,48,64,.05); }
+.style-icon { font-size:1.6rem; display:block; margin-bottom:9px; }
+.style-title {
+  font-family:'Cormorant Garamond',serif; font-size:1.05rem;
+  font-weight:400; color:var(--deep); display:block; margin-bottom:4px;
+}
+.style-desc {
+  font-size:.65rem; letter-spacing:.04em; color:var(--muted);
+  line-height:1.5; display:block;
+}
+.style-btn.selected .style-title { color:var(--burgundy); }
+.style-btn.selected .style-desc  { color:var(--rose); }
+
+/* ── NOTES ───────────────────────────── */
+.notes-input {
+  width:100%; background:#fafafa;
+  border:1.5px solid var(--border);
+  color:var(--text);
+  font-family:'DM Mono',monospace; font-weight:300;
+  font-size:.82rem; padding:14px 16px;
+  resize:vertical; min-height:96px; outline:none;
+  transition:border-color .2s; line-height:1.7;
+}
+.notes-input:focus { border-color:rgba(122,48,64,.4); background:#fff; }
+.notes-input::placeholder { color:var(--muted); opacity:.7; }
+.notes-hint {
+  font-size:.68rem; color:var(--muted); margin-top:9px; line-height:1.7;
+}
+
+/* ── CTA BUTTON ──────────────────────── */
+.find-btn {
+  display:block; width:100%; max-width:360px;
+  margin:28px auto 0;
+  background:var(--burgundy); color:var(--cream);
+  border:none; padding:18px 32px;
+  font-family:'DM Mono',monospace; font-size:.76rem;
+  font-weight:400; letter-spacing:.18em; text-transform:uppercase;
+  cursor:pointer;
+  transition:background .2s, transform .15s, opacity .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.find-btn:hover  { background:#923850; transform:translateY(-1px); }
+.find-btn:active { transform:translateY(0); }
+.find-btn:disabled { opacity:.3; cursor:not-allowed; transform:none; }
+
+/* ── RESULT PANEL ────────────────────── */
+#result-panel { display:none; max-width:780px; margin:0 auto 60px; padding:0 20px; }
+#result-panel.show { display:block; }
+
+/* Results heading */
+.results-heading {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem; font-weight:300;
+  color:var(--deep); margin-bottom:20px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.results-heading em { font-style:italic; color:var(--burgundy); }
+.results-heading .rcount {
+  font-size:.75rem; color:var(--muted);
+  font-family:'DM Mono',monospace; font-weight:300;
+  margin-left:8px; letter-spacing:.04em;
+}
+
+/* ── RESULT CARD ─────────────────────── */
+.result-card {
+  background:#fff;
+  border:1px solid var(--border);
+  margin-bottom:16px;
+  box-shadow:0 2px 16px rgba(42,26,30,.05);
+  overflow:hidden;
+  animation: fadeUp .45s ease both;
+}
+.result-card:nth-child(2) { animation-delay:.08s; }
+.result-card:nth-child(3) { animation-delay:.16s; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Rank banner */
+.rank-banner {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 22px;
+  border-bottom:1px solid var(--border);
+  font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+}
+.rank-banner.rank-1 { background:rgba(122,48,64,.06); color:var(--burgundy); }
+.rank-banner.rank-2 { background:rgba(184,152,60,.05); color:var(--gold); }
+.rank-banner.rank-3 { background:rgba(122,146,120,.05); color:var(--sage); }
+.rank-dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+}
+.rank-1 .rank-dot { background:var(--burgundy); }
+.rank-2 .rank-dot { background:var(--gold); }
+.rank-3 .rank-dot { background:var(--sage); }
+
+/* Card inner layout: image left, content right */
+.card-inner {
+  display:grid;
+  grid-template-columns: 200px 1fr;
+}
+@media(max-width:540px){
+  .card-inner { grid-template-columns:1fr; }
+}
+
+/* Image slot */
+.card-img-slot {
+  position:relative; overflow:hidden;
+  min-height:200px;
+  background:var(--parchment);
+  border-right:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:8px;
+}
+@media(max-width:540px){
+  .card-img-slot { min-height:160px; border-right:none; border-bottom:1px solid var(--border); }
+}
+.card-img-slot img {
+  width:100%; height:100%; object-fit:cover;
+  position:absolute; inset:0;
+}
+.img-placeholder-text {
+  font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(42,26,30,.2); text-align:center;
+}
+.img-placeholder-icon {
+  font-size:1.4rem; opacity:.18;
+}
+
+/* Card content */
+.card-content { padding:22px 24px 20px; display:flex; flex-direction:column; gap:14px; }
+
+.card-name-row {
+  display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+}
+.card-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.9rem; font-weight:400; font-style:italic;
+  line-height:1; color:var(--burgundy);
+}
+.card-price {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem; color:var(--gold);
+  border:1px solid rgba(184,152,60,.4);
+  padding:4px 12px; white-space:nowrap;
+  align-self:flex-start; margin-top:4px;
+}
+.card-tagline {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic; font-size:1rem;
+  color:var(--muted); line-height:1.45;
+}
+.card-desc {
+  font-size:.75rem; line-height:1.85;
+  color:var(--mid);
+}
+
+/* Swatches */
+.swatch-section { display:flex; flex-direction:column; gap:10px; }
+.sw-label {
+  font-size:.6rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); display:block; margin-bottom:5px;
+}
+.dot-row { display:flex; gap:7px; flex-wrap:wrap; }
+.dot {
+  width:24px; height:24px; border-radius:50%;
+  border:1px solid rgba(0,0,0,.09);
+}
+.stem-row { display:flex; align-items:center; gap:10px; }
+.stem-bar {
+  height:7px; border-radius:4px; width:140px; max-width:100%;
+  border:1px solid rgba(0,0,0,.07);
+}
+.stem-text { font-size:.65rem; color:var(--muted); }
+
+/* Specs */
+.card-specs {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:10px; border-top:1px solid var(--border); padding-top:14px;
+}
+@media(max-width:440px){
+  .card-specs { grid-template-columns:1fr; }
+}
+.spec-key {
+  font-size:.58rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); display:block; margin-bottom:4px;
+}
+.spec-val { font-size:.72rem; color:var(--mid); line-height:1.55; }
+
+/* Card actions */
+.card-actions {
+  padding:16px 24px 20px;
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  border-top:1px solid var(--border);
+  background:rgba(250,247,242,.5);
+}
+.action-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:10px 18px;
+  font-family:'DM Mono',monospace; font-size:.66rem;
+  letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; text-decoration:none;
+  transition:all .2s; border:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.action-btn svg { width:13px; height:13px; flex-shrink:0; }
+.action-btn.primary { background:var(--burgundy); color:var(--cream); }
+.action-btn.primary:hover { background:#923850; }
+.action-btn.secondary {
+  background:transparent; color:var(--burgundy);
+  border:1.5px solid rgba(122,48,64,.35);
+}
+.action-btn.secondary:hover { border-color:var(--burgundy); background:rgba(122,48,64,.05); }
+.action-btn.ghost {
+  background:transparent; color:var(--muted);
+  border:1.5px solid var(--border);
+}
+.action-btn.ghost:hover { color:var(--text); border-color:var(--mid); }
+.copy-confirm {
+  font-size:.66rem; color:var(--sage); opacity:0;
+  transition:opacity .3s; letter-spacing:.06em;
+}
+.copy-confirm.show { opacity:1; }
+
+/* ── CUSTOM RESULT ────────────────────── */
+.custom-card {
+  background:#fff; border:1px solid var(--border);
+  box-shadow:0 2px 16px rgba(42,26,30,.05);
+  overflow:hidden;
+  animation: fadeUp .45s ease both;
+}
+.custom-header {
+  background:rgba(122,48,64,.06);
+  border-bottom:1px solid rgba(122,48,64,.15);
+  padding:22px 24px;
+}
+.custom-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.7rem; font-style:italic;
+  color:var(--burgundy); margin-bottom:6px;
+}
+.custom-sub { font-size:.75rem; color:var(--mid); line-height:1.75; }
+.custom-brief-box { padding:22px 24px; border-bottom:1px solid var(--border); }
+.brief-label {
+  font-size:.6rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--sage); margin-bottom:12px; display:block;
+}
+.brief-text {
+  font-size:.78rem; line-height:1.9;
+  color:var(--mid); font-style:italic;
+  background:var(--parchment);
+  padding:16px 18px;
+  border-left:3px solid var(--blush);
+}
+
+/* ── START OVER ──────────────────────── */
+.start-over-wrap { text-align:center; margin-top:24px; }
+.start-over-btn {
+  background:none; border:none; color:var(--muted);
+  font-family:'DM Mono',monospace; font-size:.68rem;
+  letter-spacing:.12em; text-transform:uppercase;
+  cursor:pointer; padding:8px 16px; transition:color .2s;
+}
+.start-over-btn:hover { color:var(--burgundy); }
+
+/* ── FOOTER ──────────────────────────── */
+footer {
+  border-top:1px solid var(--border);
+  padding:22px 24px; text-align:center;
+  background:rgba(250,247,242,.8);
+}
+footer p { font-size:.68rem; letter-spacing:.08em; color:var(--muted); line-height:2.1; }
+footer a { color:var(--rose); text-decoration:none; }
+footer a:hover { color:var(--burgundy); }
+
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header>
+  <a class="logo" href="https://www.matlackflorist.com">Matlack Florist</a>
+  <a class="header-link" href="https://www.matlackflorist.com/categories/prom-dance-flowers/386557">Shop All Prom ↗</a>
+</header>
+
+<div class="hero">
+  <p class="hero-eyebrow">2026 Prom Collection</p>
+  <h1 class="hero-title">Find Your<br><em>Perfect Bouquet</em></h1>
+  <p class="hero-sub">Tell us about your dress and we'll match you to the perfect hand-tied bouquet — or build a custom description to share with our design team.</p>
+</div>
+
+<div class="steps" id="quiz-steps">
+  <div class="progress-row">
+    <div class="pdot active" id="pd1"></div>
+    <div class="pdot" id="pd2"></div>
+    <div class="pdot" id="pd3"></div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-card active visible" id="step1">
+    <div class="step-header">
+      <span class="step-num">01</span>
+      <span class="step-label">What color is your <em>dress?</em></span>
+    </div>
+    <div class="color-grid" id="color-grid"></div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card" id="step2">
+    <div class="step-header">
+      <span class="step-num">02</span>
+      <span class="step-label">What's your <em>vibe?</em></span>
+    </div>
+    <div class="style-grid" id="style-grid"></div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-card" id="step3">
+    <div class="step-header">
+      <span class="step-num">03</span>
+      <span class="step-label">Any <em>details</em> to add?</span>
+    </div>
+    <textarea class="notes-input" id="notes-input"
+      placeholder="e.g. my dress is dusty blue with silver beading, I love roses, I'd prefer a navy stem wrap..." rows="3"></textarea>
+    <p class="notes-hint">Optional — but the more you share, the better we can match you. Flowers you love or hate, stem wrap color, accessories, anything helps.</p>
+    <button class="find-btn" id="find-btn" disabled>Find My Bouquets →</button>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="result-panel">
+  <div id="results-container"></div>
+  <div class="start-over-wrap">
+    <button class="start-over-btn" id="start-over-btn">← Start over</button>
+  </div>
+</div>
+
+<footer>
+  <p>
+    <a href="https://www.matlackflorist.com">matlackflorist.com</a>
+    &nbsp;·&nbsp;
+    <a href="tel:6104313077">610-431-3077</a>
+    &nbsp;·&nbsp;
+    210 N Chester Rd, West Chester PA
+    &nbsp;·&nbsp;
+    Exclusive Design &amp; Hand Delivered
+  </p>
+</footer>
+</div>
+
+<script>
+/* ══ DATA ══════════════════════════════════════════════════════ */
+
+const DRESS_COLORS = [
+  { id:'blush',     name:'Blush',     bg:'#f0c8c8' },
+  { id:'pink',      name:'Pink',      bg:'#e87898' },
+  { id:'red',       name:'Red',       bg:'#cc2030' },
+  { id:'burgundy',  name:'Wine',      bg:'#6a1830' },
+  { id:'purple',    name:'Purple',    bg:'#7838a0' },
+  { id:'lavender',  name:'Lavender',  bg:'#b890d0' },
+  { id:'navy',      name:'Navy',      bg:'#182848' },
+  { id:'blue',      name:'Blue',      bg:'#3870b8' },
+  { id:'teal',      name:'Teal',      bg:'#2a8878' },
+  { id:'green',     name:'Green',     bg:'#2a6040' },
+  { id:'yellow',    name:'Yellow',    bg:'#e8c830' },
+  { id:'orange',    name:'Orange',    bg:'#e07030' },
+  { id:'coral',     name:'Coral',     bg:'#e07058' },
+  { id:'peach',     name:'Peach',     bg:'#f0a870' },
+  { id:'champagne', name:'Champagne', bg:'#d8c090' },
+  { id:'white',     name:'White',     bg:'#f8f4ee', border:true },
+  { id:'silver',    name:'Silver',    bg:'#a0a8b0' },
+  { id:'black',     name:'Black',     bg:'#181010' },
+];
+
+const STYLES = [
+  { id:'romantic', icon:'🌸', title:'Romantic',  desc:'Soft, whispy, dreamy' },
+  { id:'bold',     icon:'✦',  title:'Bold',      desc:'Statement-making, vivid' },
+  { id:'classic',  icon:'🥀', title:'Classic',   desc:'Clean, structured, timeless' },
+  { id:'wild',     icon:'🌿', title:'Wild',      desc:'Garden-gathered, organic' },
+];
+
+// ── Images: add a URL or base64 string to each bouquet's `image` field
+// when you have photos. Leave as null for placeholder.
+const BOUQUETS = [
+  {
+    id:'fairy-tale', name:'Fairy Tale', price:'From $110',
+    tagline:'Dreamy soft whites, blush & green — fit for a prom queen.',
+    description:'The perennial favorite. Garden roses, ranunculus, and lisianthus are layered with airy wisps of greenery into a loose, full silhouette that feels effortlessly romantic. Timeless ivory wrap, works beautifully against almost any gown color.',
+    keyFlowers:'Garden roses, ranunculus, lisianthus, babies breath',
+    style:'Loose, whispy, romantic, full',
+    pairsWith:'Blush, white, black, navy, any pastel',
+    stemWrap:'Ivory satin · blush available',
+    dots:['#fdf0f3','#eecad2','#e0a4b4','#d8889a','#c2d6b2','#9abaa0'],
+    stemColor:'#f0e4e0',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774055603/ProImages/qzyvsuaonxuguzff2sjn.jpg',
+    score:(c,s)=>(c==='blush'?4:c==='white'?3:c==='lavender'?2:c==='silver'?2:c==='black'?1:c==='navy'?1:0)+(s==='romantic'?4:s==='wild'?2:0),
+  },
+  {
+    id:'luna', name:'Luna', price:'From $75',
+    tagline:'Pure white roses. Refined, luminous, effortlessly elegant.',
+    description:'Restraint as an art form. A generous gathering of white roses and spray roses with minimal greenery — equally stunning against bold jewel tones, warm champagne, or classic black. Optional sparkle accents add a subtle evening glow.',
+    keyFlowers:'White roses, white spray roses, minimal greenery',
+    style:'Refined, minimal, luminous',
+    pairsWith:'Any gown — a true universal',
+    stemWrap:'Ivory or white satin',
+    dots:['#ffffff','#f8f4ec','#f0ece0','#e8e4d8','#e8d060'],
+    stemColor:'#f4f0e8',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773855817/ProImages/vrwgwinmaaz6pzn2aofg.jpg',
+    score:(c,s)=>(c==='white'?3:c==='champagne'?3:c==='silver'?2:c==='black'?2:c==='blush'?2:0)+(s==='classic'?4:s==='romantic'?2:0),
+  },
+  {
+    id:'twilight', name:'Nova', price:'From $100',
+    tagline:'White & sky blue — soft as dusk, ethereal all evening.',
+    description:'Crisp white roses and spray roses meet cool blue delphinium and wispy eucalyptus in a design that shifts and deepens beautifully under evening light. A dreamy, cool, and contemporary aesthetic — Nova captures exactly what blue-gown customers come looking for.',
+    keyFlowers:'White roses, spray roses, blue delphinium, eucalyptus',
+    style:'Whispy, airy, ethereal',
+    pairsWith:'All blues, grey, silver, white',
+    stemWrap:'White satin · light blue available',
+    dots:['#f4f8ff','#d4e4f8','#a8c4e4','#7098c4','#b4c8b8','#90a898'],
+    stemColor:'#dce8f8',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774057650/ProImages/jm37wpssqvq9s7ynhwco.jpg',
+    score:(c,s)=>(c==='blue'?5:c==='silver'?3:c==='white'?2:0)+(s==='romantic'?3:s==='wild'?2:0),
+  },
+  {
+    id:'strawberry-punch', name:'Pink Sugar', price:'From $75',
+    tagline:'Every shade of pink — blush to deep fuchsia, impossibly lush.',
+    description:'Unapologetically pink and utterly irresistible. Full-bloom roses, spray roses, and ranunculus layered from the softest blush through vivid fuchsia for maximum visual impact. Sweet, bold, and guaranteed to photograph beautifully from across the dance floor.',
+    keyFlowers:'Pink roses, spray roses, ranunculus, soft greenery',
+    style:'Lush, full, maximalist pink',
+    pairsWith:'Pink, magenta, red, white, black',
+    stemWrap:'Vivid pink satin',
+    dots:['#f8d0dc','#f098b4','#e05888','#c02060','#90a870'],
+    stemColor:'#e84888',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773856281/ProImages/zhm5mliuoy6zd9jv5c2m.jpg',
+    score:(c,s)=>(c==='pink'?5:c==='blush'?3:c==='red'?1:c==='black'?1:c==='white'?1:0)+(s==='bold'?4:s==='romantic'?2:0),
+  },
+  {
+    id:'enchanted', name:'Enchanted', price:'From $140',
+    tagline:'White & purple — wild, garden-gathered, magical.',
+    description:'Soft white blooms woven through with purple lisianthus, lavender spray roses, and flowing greenery — a design that feels genuinely foraged from an enchanted garden. Beautiful against jewel tones, earthy greens, and every shade of purple.',
+    keyFlowers:'White roses, lisianthus, lavender spray roses, flowing greenery',
+    style:'Whimsical, wild, garden-gathered',
+    pairsWith:'Purple, lilac, forest green, black, dusty blue',
+    stemWrap:'Soft lilac ribbon',
+    dots:['#f8f4fc','#d4c0e8','#b098d4','#8860b8','#a8c498'],
+    stemColor:'#c0b0e0',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773858756/ProImages/hcaq0tdslvhlpo7cqpsl.jpg',
+    score:(c,s)=>(c==='purple'?5:c==='lavender'?5:c==='green'?2:c==='black'?1:c==='blue'?1:0)+(s==='wild'?4:s==='romantic'?2:0),
+  },
+  {
+    id:'stardust', name:'Stardust', price:'From $110',
+    tagline:'Spring pinks & purples — full, colorful, a little magical.',
+    description:'Spring in full bloom. Pink roses, ranunculus, and peonies layered with soft purple accents and a touch of sparkle. A purple satin wrap ties the whole celebratory palette together.',
+    keyFlowers:'Pink roses, ranunculus, peonies, soft greenery',
+    style:'Full, colorful, celebratory',
+    pairsWith:'Pink, purple, lavender, silver, light blue',
+    stemWrap:'Purple satin',
+    dots:['#f8d4e4','#e898b8','#c060a0','#b090cc','#f0d840'],
+    stemColor:'#a878b0',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774055990/ProImages/zx1ij2c244wnrmhgdgrf.jpg',
+    score:(c,s)=>(c==='lavender'?4:c==='purple'?3:c==='pink'?3:c==='silver'?1:c==='blue'?1:0)+(s==='bold'?3:s==='romantic'?3:0),
+  },
+  {
+    id:'serendipity', name:'Serendipity', price:'From $120',
+    tagline:'Coral, hot pink & deep berry — this one owns the room.',
+    description:'Warm, vivid, and impossible to miss. Rich coral, hot pink, and deep berry blooms balanced with warm orange accents and hypericum berries — spontaneous, abundant energy for the person whose personality is as bold as their entrance.',
+    keyFlowers:'Coral roses, spray roses, hypericum berries',
+    style:'Vibrant, textural, festive',
+    pairsWith:'Coral, orange, warm red, gold, earth tones',
+    stemWrap:'Warm coral satin',
+    dots:['#e87848','#d84870','#b83060','#e89848','#983030'],
+    stemColor:'#c85840',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773858397/ProImages/cn7tg4fbbrkyenfvq3w3.jpg',
+    score:(c,s)=>(c==='coral'?5:c==='orange'?4:c==='peach'?3:c==='champagne'?2:c==='red'?1:0)+(s==='bold'?4:s==='wild'?2:0),
+  },
+  {
+    id:'red-carpet', name:'Red Carpet', price:'From $75',
+    tagline:'Classic red roses — bold, timeless, always right.',
+    description:'Bold, confident, and undeniably glamorous. Lush red roses with rich dark greenery in a clean, structured silhouette built for maximum impact. When in doubt, there is simply nothing more certain than a perfectly executed red rose bouquet.',
+    keyFlowers:'Red roses, dark greenery',
+    style:'Classic, structured, bold',
+    pairsWith:'Red, black, white, forest green, gold',
+    stemWrap:'White satin · red or black available',
+    dots:['#b81828','#de3848','#f07878','#1e4820','#3e6840'],
+    stemColor:'#e8e8e8',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773855437/ProImages/kdqepqvscmnjftviclxu.jpg',
+    score:(c,s)=>(c==='red'?5:c==='black'?3:c==='green'?2:c==='white'?2:c==='champagne'?1:0)+(s==='classic'?4:s==='bold'?3:0),
+  },
+  {
+    id:'golden-hour', name:'Golden Hour', price:'From $110',
+    tagline:'Peach, coral & warm cream — the palette of a late afternoon sky.',
+    description:'Sun-drenched and luminous. Peach ranunculus and coral spray roses layered with cream garden roses and airy greenery — a bouquet that radiates warmth and soft romance. The answer for every champagne, coral, and orange gown in the room.',
+    keyFlowers:'Peach ranunculus, coral spray roses, cream garden roses',
+    style:'Lush, warm, romantic',
+    pairsWith:'Orange, coral, peach, gold, champagne, yellow',
+    stemWrap:'Ivory or warm peach satin',
+    dots:['#f8dca8','#f0b478','#e88858','#f8f0e0','#b4c890'],
+    stemColor:'#e0c888',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774058441/ProImages/r00ldbnnuggamkmwttzw.jpg',
+    score:(c,s)=>(c==='peach'?5:c==='coral'?4:c==='orange'?4:c==='champagne'?3:c==='yellow'?3:0)+(s==='romantic'?3:s==='bold'?2:0),
+  },
+  {
+    id:'velvet-noir', name:'Velvet', price:'From $90',
+    tagline:'Burgundy, wine & white — moody, refined, deeply elegant.',
+    description:'Bold in depth, not brightness. Deep burgundy and wine roses anchored by white hydrangea and soft pink accents — round, full, and evening-ready. Garnet and plum tones layer beautifully under low light, and a deep wine or black satin wrap finishes the look.',
+    keyFlowers:'Burgundy roses, white hydrangea, ranunculus',
+    style:'Round, full, moody, refined',
+    pairsWith:'Wine, plum, black, navy, dark jewel tones',
+    stemWrap:'Deep wine satin · black available',
+    dots:['#580820','#8a1838','#c04860','#f8f8f8','#e8b0b8'],
+    stemColor:'#380818',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774056859/ProImages/pktbptck1veikpetozxd.jpg',
+    score:(c,s)=>(c==='burgundy'?5:c==='black'?4:c==='navy'?3:c==='purple'?2:0)+(s==='classic'?4:s==='bold'?2:0),
+  },
+  {
+    id:'midnight-garden', name:'Midnight Garden', price:'From $100',
+    tagline:'Deep blue hydrangea & white roses — indigo drama, bold & full.',
+    description:'Deep and commanding. Full blue hydrangea anchored with white roses, delphinium, and eucalyptus — lush, richly indigo, built to make an impression. For every navy, royal blue, and sapphire gown customer who wants a bouquet that matches their dress in intensity.',
+    keyFlowers:'Blue hydrangea, white roses, delphinium, eucalyptus',
+    style:'Bold, full, dramatic',
+    pairsWith:'Navy, royal blue, sapphire, midnight, jewel tones',
+    stemWrap:'Navy satin · royal blue available',
+    dots:['#182848','#2860a0','#5890c8','#f8f8ff','#284838'],
+    stemColor:'#182040',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774058163/ProImages/inffpbnkukisz9mb46dv.jpg',
+    score:(c,s)=>(c==='navy'?5:c==='blue'?4:c==='black'?2:c==='purple'?1:0)+(s==='bold'?4:s==='classic'?2:0),
+  },
+  {
+    id:'sunny-day', name:'Sunshine', price:'From $120',
+    tagline:'Warm yellows, soft whites & green — bright, joyful, radiant.',
+    description:'The palette our customers kept asking for. Yellow roses and ranunculus layered with cream whites and fresh greenery for a bouquet that radiates warmth and effortless spring energy. Light and lively without ever feeling informal — made for every yellow, lemon, butter, and warm-white gown.',
+    keyFlowers:'Yellow roses, ranunculus, cream whites, fresh greenery',
+    style:'Bright, joyful, loose and full',
+    pairsWith:'Yellow, lemon, butter, warm white, sage green',
+    stemWrap:'Warm yellow or sage green satin',
+    dots:['#f8e888','#f0cc58','#d8a838','#f8f4e8','#a8c478','#78a048'],
+    stemColor:'#d8b840',
+    image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774184397/ProImages/dcngah6s5clw99zwxous.jpg',
+    score:(c,s)=>(c==='yellow'?5:c==='champagne'?2:c==='white'?2:c==='green'?1:c==='orange'?1:0)+(s==='romantic'?3:s==='wild'?3:0),
+  },
+];
+
+/* ══ STATE ══════════════════════════════════════════════════════ */
+let selectedColor = null;
+let selectedStyle = null;
+
+/* ══ RENDER COLOR SWATCHES ═════════════════════════════════════ */
+const colorGrid = document.getElementById('color-grid');
+DRESS_COLORS.forEach(dc => {
+  const el = document.createElement('div');
+  el.className = 'color-swatch';
+  el.innerHTML = `
+    <div class="swatch-dot" style="background:${dc.bg};${dc.border?'border:1.5px solid #ccc;':''}"></div>
+    <span class="swatch-name">${dc.name}</span>
+  `;
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedColor = dc.id;
+    advance(1);
+  });
+  colorGrid.appendChild(el);
+});
+
+/* ══ RENDER STYLE OPTIONS ══════════════════════════════════════ */
+const styleGrid = document.getElementById('style-grid');
+STYLES.forEach(st => {
+  const el = document.createElement('div');
+  el.className = 'style-btn';
+  el.innerHTML = `
+    <span class="style-icon">${st.icon}</span>
+    <span class="style-title">${st.title}</span>
+    <span class="style-desc">${st.desc}</span>
+  `;
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedStyle = st.id;
+    advance(2);
+  });
+  styleGrid.appendChild(el);
+});
+
+/* ══ STEP PROGRESSION ══════════════════════════════════════════ */
+function advance(fromStep) {
+  const steps = [null,'step1','step2','step3'];
+  const dots  = [null,'pd1','pd2','pd3'];
+  const cur = document.getElementById(steps[fromStep]);
+  const nxt = document.getElementById(steps[fromStep+1]);
+  cur.classList.remove('active'); cur.classList.add('completed');
+  document.getElementById(dots[fromStep]).classList.remove('active');
+  document.getElementById(dots[fromStep]).classList.add('done');
+  document.getElementById(dots[fromStep+1]).classList.add('active');
+  nxt.classList.add('active','visible');
+  if (fromStep===2) document.getElementById('find-btn').disabled = false;
+  setTimeout(()=> nxt.scrollIntoView({behavior:'smooth',block:'start'}), 80);
+}
+
+/* ══ MATCHING ══════════════════════════════════════════════════ */
+function getTopMatches(colorId, styleId, n=3) {
+  return BOUQUETS
+    .map(b => ({ bouquet:b, score:b.score(colorId,styleId) }))
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,n);
+}
+
+/* ══ RENDER HELPERS ════════════════════════════════════════════ */
+function rankLabel(i) {
+  if(i===0) return ['rank-1','✦ Best Match'];
+  if(i===1) return ['rank-2','★ Also Great'];
+  return       ['rank-3','◆ Worth a Look'];
+}
+
+function renderBouquetCard(b, rank, notes) {
+  const [rankClass, rankText] = rankLabel(rank);
+  const dotsHtml = b.dots.map(d=>`<div class="dot" style="background:${d};"></div>`).join('');
+  const imgHtml = b.image
+    ? `<img src="${b.image}" alt="${b.name}" loading="lazy">`
+    : `<div class="img-placeholder-icon">🌸</div><div class="img-placeholder-text">Photo<br>Coming Soon</div>`;
+  const orderNote = encodeURIComponent(`Prom Bouquet — ${b.name}\nStem wrap: ${b.stemWrap}${notes?.trim()?'\nNotes: '+notes.trim():''}`);
+
+  return `
+    <div class="result-card">
+      <div class="rank-banner ${rankClass}">
+        <div class="rank-dot"></div>
+        ${rankText}
+      </div>
+      <div class="card-inner">
+        <div class="card-img-slot">${imgHtml}</div>
+        <div class="card-content">
+          <div class="card-name-row">
+            <div class="card-name">${b.name}</div>
+            <div class="card-price">${b.price}</div>
+          </div>
+          <div class="card-tagline">${b.tagline}</div>
+          <div class="card-desc">${b.description}</div>
+          <div class="swatch-section">
+            <div>
+              <span class="sw-label">Palette</span>
+              <div class="dot-row">${dotsHtml}</div>
+            </div>
+            <div>
+              <span class="sw-label">Stem Wrap</span>
+              <div class="stem-row">
+                <div class="stem-bar" style="background:${b.stemColor};"></div>
+                <span class="stem-text">${b.stemWrap}</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-specs">
+            <div><span class="spec-key">Key Flowers</span><span class="spec-val">${b.keyFlowers}</span></div>
+            <div><span class="spec-key">Style</span><span class="spec-val">${b.style}</span></div>
+            <div><span class="spec-key">Pairs With</span><span class="spec-val">${b.pairsWith}</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <a href="https://www.matlackflorist.com/categories/prom-dance-flowers/386557"
+           target="_blank" class="action-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Order Now
+        </a>
+        <a href="tel:6104313077" class="action-btn secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.06 6.06l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+          Call Us
+        </a>
+        <button class="action-btn ghost copy-note-btn" data-note="${orderNote}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+          Copy Order Note
+        </button>
+        <span class="copy-confirm">Copied!</span>
+      </div>
+    </div>`;
+}
+
+function renderCustomCard(colorId, styleId, notes) {
+  const colorName = DRESS_COLORS.find(c=>c.id===colorId)?.name || colorId;
+  const styleName = STYLES.find(s=>s.id===styleId)?.title || styleId;
+  const styleDescs = {
+    romantic:'soft, whispy, and romantic — loose florals, airy greenery, nothing too structured',
+    bold:'bold and full — saturated colors, maximum impact, lush and generous',
+    classic:'classic and structured — clean silhouette, timeless and elegant',
+    wild:'organic and garden-gathered — loose and free, natural textures, like it was just picked',
+  };
+  const colorGuides = {
+    teal:'jewel-tone teals, deep greens, and crisp white accents',
+    green:'lush botanical greens, ivory whites, and fresh herbs',
+    silver:'cool whites, pale blue-greys, and silver-tipped accents',
+    orange:'warm oranges, terracotta, and golden tones',
+    burgundy:'deep burgundy and wine florals with white hydrangea',
+  };
+  const palette = colorGuides[colorId] || `tones that coordinate beautifully with ${colorName.toLowerCase()}`;
+  let brief = `Custom Hand-Tied Bouquet\nDress color: ${colorName}\nStyle direction: ${styleName} — ${styleDescs[styleId]}.\nSuggested palette: flowers in ${palette}.\n`;
+  if(notes?.trim()) brief += `Customer notes: "${notes.trim()}"\n`;
+  brief += `Please advise on stem wrap color to complement the gown.`;
+  const encodedBrief = encodeURIComponent(brief);
+
+  return `
+    <div class="custom-card">
+      <div class="custom-header">
+        <div class="custom-title">Let's Build Something Custom</div>
+        <div class="custom-sub">Your ${colorName} dress in a ${styleName} style is a little outside our standard collection — but our designers love a creative challenge. Here's your ready-to-send custom brief.</div>
+      </div>
+      <div class="custom-brief-box">
+        <span class="brief-label">Your Custom Brief</span>
+        <div class="brief-text">${brief.replace(/\n/g,'<br>')}</div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn primary" id="copy-brief-btn" data-brief="${encodedBrief}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+          Copy Brief
+        </button>
+        <a href="tel:6104313077" class="action-btn secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.06 6.06l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+          Call to Order
+        </button>
+        <a href="mailto:hello@matlackflorist.com?subject=Custom%20Prom%20Bouquet&body=${encodedBrief}"
+           class="action-btn ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Email Brief
+        </button>
+        <span class="copy-confirm" id="brief-copy-confirm">Copied!</span>
+      </div>
+    </div>`;
+}
+
+/* ══ FIND BUTTON ═══════════════════════════════════════════════ */
+document.getElementById('find-btn').addEventListener('click', () => {
+  const notes = document.getElementById('notes-input').value;
+  const matches = getTopMatches(selectedColor, selectedStyle, 3);
+  const container = document.getElementById('results-container');
+  const panel = document.getElementById('result-panel');
+
+  document.getElementById('pd3').classList.remove('active');
+  document.getElementById('pd3').classList.add('done');
+
+  // Decide: feature matches or custom
+  const topScore = matches[0].score;
+  let html = '';
+
+  if(topScore >= 5) {
+    // Show heading + 2-3 feature cards
+    const countToShow = topScore >= 8 ? 3 : (topScore >= 6 ? 3 : 2);
+    const colorName = DRESS_COLORS.find(c=>c.id===selectedColor)?.name || '';
+    html += `<p class="results-heading">
+      Bouquets for a <em>${colorName}</em> gown
+      <span class="rcount">— ${countToShow} recommendations</span>
+    </p>`;
+    matches.slice(0,countToShow).forEach((m,i)=>{
+      html += renderBouquetCard(m.bouquet, i, notes);
+    });
+  } else {
+    html += renderCustomCard(selectedColor, selectedStyle, notes);
+  }
+
+  container.innerHTML = html;
+  panel.classList.add('show');
+
+  setTimeout(()=> panel.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+
+  // Wire copy buttons
+  document.querySelectorAll('.copy-note-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      navigator.clipboard?.writeText(decodeURIComponent(btn.dataset.note))
+        .then(()=>{
+          const confirm = btn.nextElementSibling;
+          confirm.classList.add('show');
+          setTimeout(()=>confirm.classList.remove('show'),2200);
+        });
+    });
+  });
+  const briefBtn = document.getElementById('copy-brief-btn');
+  if(briefBtn){
+    briefBtn.addEventListener('click',()=>{
+      navigator.clipboard?.writeText(decodeURIComponent(briefBtn.dataset.brief))
+        .then(()=>{
+          const confirm = document.getElementById('brief-copy-confirm');
+          confirm.classList.add('show');
+          setTimeout(()=>confirm.classList.remove('show'),2200);
+        });
+    });
+  }
+});
+
+/* ══ START OVER ════════════════════════════════════════════════ */
+document.getElementById('start-over-btn').addEventListener('click', ()=>{
+  selectedColor = null; selectedStyle = null;
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('notes-input').value = '';
+  document.getElementById('find-btn').disabled = true;
+  ['step1','step2','step3'].forEach((id,i)=>{
+    const el = document.getElementById(id);
+    el.classList.remove('active','completed');
+    if(i>0) el.classList.remove('visible');
+    if(i===0) el.classList.add('active');
+  });
+  document.getElementById('pd1').className='pdot active';
+  document.getElementById('pd2').className='pdot';
+  document.getElementById('pd3').className='pdot';
+  document.getElementById('result-panel').classList.remove('show');
+  setTimeout(()=>document.getElementById('quiz-steps').scrollIntoView({behavior:'smooth',block:'start'}),80);
+});
+</script>
+</body>
+</html>
