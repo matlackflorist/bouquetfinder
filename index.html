@@ -457,6 +457,18 @@ footer p { font-size:.68rem; letter-spacing:.08em; color:var(--muted); line-heig
 footer a { color:var(--rose); text-decoration:none; }
 footer a:hover { color:var(--burgundy); }
 
+.also-custom-label {
+  text-align:center; padding:28px 16px 20px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.also-custom-label span {
+  font-family:'Cormorant Garamond',serif; font-size:1.1rem;
+  font-style:italic; color:var(--muted);
+}
+.also-custom-label p {
+  font-size:.72rem; color:var(--muted); letter-spacing:.04em;
+}
+
 .hidden { display:none !important; }
 </style>
 </head>
@@ -528,7 +540,7 @@ footer a:hover { color:var(--burgundy); }
     &nbsp;·&nbsp;
     210 N Chester Rd, West Chester PA
     &nbsp;·&nbsp;
-    Exclusive Design &amp; Hand Delivered
+    Exclusive Designs
   </p>
 </footer>
 </div>
@@ -570,8 +582,8 @@ const BOUQUETS = [
   {
     id:'fairy-tale', name:'Fairy Tale', price:'From $110',
     tagline:'Dreamy soft whites, blush & green — fit for a prom queen.',
-    description:'The perennial favorite. Garden roses, ranunculus, and lisianthus are layered with airy wisps of greenery into a loose, full silhouette that feels effortlessly romantic. Timeless ivory wrap, works beautifully against almost any gown color.',
-    keyFlowers:'Garden roses, ranunculus, lisianthus, babies breath',
+    description:'The perennial favorite. Pink roses, pink spray roses, and pink wax flower are layered with airy wisps of greenery into a loose, full silhouette that feels effortlessly romantic. Timeless ivory wrap, works beautifully against almost any gown color.',
+    keyFlowers:'Pink roses, pink spray roses, pink wax flower, greenery',
     style:'Loose, whispy, romantic, full',
     pairsWith:'Blush, white, black, navy, any pastel',
     stemWrap:'Ivory satin · blush available',
@@ -583,21 +595,21 @@ const BOUQUETS = [
   {
     id:'luna', name:'Luna', price:'From $75',
     tagline:'Pure white roses. Refined, luminous, effortlessly elegant.',
-    description:'Restraint as an art form. A generous gathering of white roses and spray roses with minimal greenery — equally stunning against bold jewel tones, warm champagne, or classic black. Optional sparkle accents add a subtle evening glow.',
-    keyFlowers:'White roses, white spray roses, minimal greenery',
+    description:'Restraint as an art form. A generous gathering of white roses with minimal greenery — equally stunning against bold jewel tones, warm champagne, or classic black. Optional sparkle accents add a subtle evening glow.',
+    keyFlowers:'White roses, minimal greenery',
     style:'Refined, minimal, luminous',
     pairsWith:'Any gown — a true universal',
     stemWrap:'Ivory or white satin',
     dots:['#ffffff','#f8f4ec','#f0ece0','#e8e4d8','#e8d060'],
     stemColor:'#f4f0e8',
     image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773855817/ProImages/vrwgwinmaaz6pzn2aofg.jpg',
-    score:(c,s)=>(c==='white'?3:c==='champagne'?3:c==='silver'?2:c==='black'?2:c==='blush'?2:0)+(s==='classic'?4:s==='romantic'?2:0),
+    score:(c,s)=>(c==='white'?3:c==='champagne'?3:c==='silver'?2:c==='black'?2:c==='blush'?2:1)+(s==='classic'?4:s==='romantic'?2:0),
   },
   {
     id:'twilight', name:'Nova', price:'From $100',
     tagline:'White & sky blue — soft as dusk, ethereal all evening.',
     description:'Crisp white roses and spray roses meet cool blue delphinium and wispy eucalyptus in a design that shifts and deepens beautifully under evening light. A dreamy, cool, and contemporary aesthetic — Nova captures exactly what blue-gown customers come looking for.',
-    keyFlowers:'White roses, spray roses, blue delphinium, eucalyptus',
+    keyFlowers:'White roses, spray roses, blue delphinium, thistle, eucalyptus',
     style:'Whispy, airy, ethereal',
     pairsWith:'All blues, grey, silver, white',
     stemWrap:'White satin · light blue available',
@@ -610,7 +622,7 @@ const BOUQUETS = [
     id:'strawberry-punch', name:'Pink Sugar', price:'From $75',
     tagline:'Every shade of pink — blush to deep fuchsia, impossibly lush.',
     description:'Unapologetically pink and utterly irresistible. Full-bloom roses, spray roses, and ranunculus layered from the softest blush through vivid fuchsia for maximum visual impact. Sweet, bold, and guaranteed to photograph beautifully from across the dance floor.',
-    keyFlowers:'Pink roses, spray roses, ranunculus, soft greenery',
+    keyFlowers:'Pink roses, soft greenery',
     style:'Lush, full, maximalist pink',
     pairsWith:'Pink, magenta, red, white, black',
     stemWrap:'Vivid pink satin',
@@ -622,21 +634,21 @@ const BOUQUETS = [
   {
     id:'enchanted', name:'Enchanted', price:'From $140',
     tagline:'White & purple — wild, garden-gathered, magical.',
-    description:'Soft white blooms woven through with purple lisianthus, lavender spray roses, and flowing greenery — a design that feels genuinely foraged from an enchanted garden. Beautiful against jewel tones, earthy greens, and every shade of purple.',
-    keyFlowers:'White roses, lisianthus, lavender spray roses, flowing greenery',
+    description:'Lavender roses and lisianthus woven through with flowing greenery — a design that feels genuinely foraged from an enchanted garden. Beautiful against jewel tones, earthy greens, every shade of purple, and rich teal.',
+    keyFlowers:'Lavender roses, lisianthus, flowing greenery',
     style:'Whimsical, wild, garden-gathered',
-    pairsWith:'Purple, lilac, forest green, black, dusty blue',
+    pairsWith:'Purple, lilac, forest green, teal, black, dusty blue',
     stemWrap:'Soft lilac ribbon',
     dots:['#f8f4fc','#d4c0e8','#b098d4','#8860b8','#a8c498'],
     stemColor:'#c0b0e0',
     image: 'https://res.cloudinary.com/dizexseir/image/upload/v1773858756/ProImages/hcaq0tdslvhlpo7cqpsl.jpg',
-    score:(c,s)=>(c==='purple'?5:c==='lavender'?5:c==='green'?2:c==='black'?1:c==='blue'?1:0)+(s==='wild'?4:s==='romantic'?2:0),
+    score:(c,s)=>(c==='purple'?5:c==='lavender'?5:c==='teal'?4:c==='green'?2:c==='black'?1:c==='blue'?1:0)+(s==='wild'?4:s==='romantic'?2:0),
   },
   {
     id:'stardust', name:'Stardust', price:'From $110',
     tagline:'Spring pinks & purples — full, colorful, a little magical.',
-    description:'Spring in full bloom. Pink roses, ranunculus, and peonies layered with soft purple accents and a touch of sparkle. A purple satin wrap ties the whole celebratory palette together.',
-    keyFlowers:'Pink roses, ranunculus, peonies, soft greenery',
+    description:'Spring in full bloom. A mix of pastel roses and accent flowers layered with soft purple tones and a touch of sparkle. A purple satin wrap ties the whole celebratory palette together.',
+    keyFlowers:'Mix of pastel roses, accent flowers, soft greenery',
     style:'Full, colorful, celebratory',
     pairsWith:'Pink, purple, lavender, silver, light blue',
     stemWrap:'Purple satin',
@@ -648,8 +660,8 @@ const BOUQUETS = [
   {
     id:'serendipity', name:'Serendipity', price:'From $120',
     tagline:'Coral, hot pink & deep berry — this one owns the room.',
-    description:'Warm, vivid, and impossible to miss. Rich coral, hot pink, and deep berry blooms balanced with warm orange accents and hypericum berries — spontaneous, abundant energy for the person whose personality is as bold as their entrance.',
-    keyFlowers:'Coral roses, spray roses, hypericum berries',
+    description:'Warm, vivid, and impossible to miss. Rich coral, hot pink blooms and pink roses balanced with cymbidium orchids and warm orange accents — spontaneous, abundant energy for the person whose personality is as bold as their entrance.',
+    keyFlowers:'Coral roses, pink roses, cymbidium orchids',
     style:'Vibrant, textural, festive',
     pairsWith:'Coral, orange, warm red, gold, earth tones',
     stemWrap:'Warm coral satin',
@@ -674,8 +686,8 @@ const BOUQUETS = [
   {
     id:'golden-hour', name:'Golden Hour', price:'From $110',
     tagline:'Peach, coral & warm cream — the palette of a late afternoon sky.',
-    description:'Sun-drenched and luminous. Peach ranunculus and coral spray roses layered with cream garden roses and airy greenery — a bouquet that radiates warmth and soft romance. The answer for every champagne, coral, and orange gown in the room.',
-    keyFlowers:'Peach ranunculus, coral spray roses, cream garden roses',
+    description:'Sun-drenched and luminous. Peach roses and orange spray roses layered with green hydrangea and cream garden roses — a bouquet that radiates warmth and soft romance. The answer for every champagne, coral, and orange gown in the room.',
+    keyFlowers:'Peach roses, orange spray roses, green hydrangea, cream garden roses',
     style:'Lush, warm, romantic',
     pairsWith:'Orange, coral, peach, gold, champagne, yellow',
     stemWrap:'Ivory or warm peach satin',
@@ -687,10 +699,10 @@ const BOUQUETS = [
   {
     id:'velvet-noir', name:'Velvet', price:'From $90',
     tagline:'Burgundy, wine & white — moody, refined, deeply elegant.',
-    description:'Bold in depth, not brightness. Deep burgundy and wine roses anchored by white hydrangea and soft pink accents — round, full, and evening-ready. Garnet and plum tones layer beautifully under low light, and a deep wine or black satin wrap finishes the look.',
-    keyFlowers:'Burgundy roses, white hydrangea, ranunculus',
+    description:'Bold in depth, not brightness. Deep burgundy and wine roses with red tulips and hot pink roses — round, full, and evening-ready. Garnet and plum tones layer beautifully under low light, and a deep wine or black satin wrap finishes the look.',
+    keyFlowers:'Burgundy roses, red tulips, hot pink roses',
     style:'Round, full, moody, refined',
-    pairsWith:'Wine, plum, black, navy, dark jewel tones',
+    pairsWith:'Wine, plum, black, navy, teal, dark jewel tones',
     stemWrap:'Deep wine satin · black available',
     dots:['#580820','#8a1838','#c04860','#f8f8f8','#e8b0b8'],
     stemColor:'#380818',
@@ -703,18 +715,18 @@ const BOUQUETS = [
     description:'Deep and commanding. Full blue hydrangea anchored with white roses, delphinium, and eucalyptus — lush, richly indigo, built to make an impression. For every navy, royal blue, and sapphire gown customer who wants a bouquet that matches their dress in intensity.',
     keyFlowers:'Blue hydrangea, white roses, delphinium, eucalyptus',
     style:'Bold, full, dramatic',
-    pairsWith:'Navy, royal blue, sapphire, midnight, jewel tones',
+    pairsWith:'Navy, royal blue, teal, sapphire, midnight, jewel tones',
     stemWrap:'Navy satin · royal blue available',
     dots:['#182848','#2860a0','#5890c8','#f8f8ff','#284838'],
     stemColor:'#182040',
     image: 'https://res.cloudinary.com/dizexseir/image/upload/v1774058163/ProImages/inffpbnkukisz9mb46dv.jpg',
-    score:(c,s)=>(c==='navy'?5:c==='blue'?4:c==='black'?2:c==='purple'?1:0)+(s==='bold'?4:s==='classic'?2:0),
+    score:(c,s)=>(c==='navy'?5:c==='blue'?4:c==='teal'?4:c==='black'?2:c==='purple'?1:0)+(s==='bold'?4:s==='classic'?2:0),
   },
   {
     id:'sunny-day', name:'Sunshine', price:'From $120',
     tagline:'Warm yellows, soft whites & green — bright, joyful, radiant.',
-    description:'The palette our customers kept asking for. Yellow roses and ranunculus layered with cream whites and fresh greenery for a bouquet that radiates warmth and effortless spring energy. Light and lively without ever feeling informal — made for every yellow, lemon, butter, and warm-white gown.',
-    keyFlowers:'Yellow roses, ranunculus, cream whites, fresh greenery',
+    description:'The palette our customers kept asking for. Yellow roses and tulips layered with cream whites and fresh greenery for a bouquet that radiates warmth and effortless spring energy. Light and lively without ever feeling informal — made for every yellow, lemon, butter, and warm-white gown.',
+    keyFlowers:'Yellow roses, tulips, cream whites, fresh greenery',
     style:'Bright, joyful, loose and full',
     pairsWith:'Yellow, lemon, butter, warm white, sage green',
     stemWrap:'Warm yellow or sage green satin',
@@ -935,21 +947,31 @@ document.getElementById('find-btn').addEventListener('click', () => {
   document.getElementById('pd3').classList.remove('active');
   document.getElementById('pd3').classList.add('done');
 
-  // Decide: feature matches or custom
   const topScore = matches[0].score;
+  const colorName = DRESS_COLORS.find(c=>c.id===selectedColor)?.name || '';
   let html = '';
 
-  if(topScore >= 5) {
-    // Show heading + 2-3 feature cards
-    const countToShow = topScore >= 8 ? 3 : (topScore >= 6 ? 3 : 2);
-    const colorName = DRESS_COLORS.find(c=>c.id===selectedColor)?.name || '';
+  if(topScore >= 3) {
+    // Count how many matches clear the threshold
+    const qualifying = matches.filter(m => m.score >= 3);
+    const countToShow = qualifying.length >= 2 ? Math.min(qualifying.length, 3) : 1;
+
     html += `<p class="results-heading">
       Bouquets for a <em>${colorName}</em> gown
-      <span class="rcount">— ${countToShow} recommendations</span>
+      <span class="rcount">— ${countToShow === 1 ? '1 recommendation' : countToShow + ' recommendations'}</span>
     </p>`;
-    matches.slice(0,countToShow).forEach((m,i)=>{
+    matches.slice(0, countToShow).forEach((m, i) => {
       html += renderBouquetCard(m.bouquet, i, notes);
     });
+
+    // If only one feature match, also show custom brief as second option
+    if(countToShow === 1) {
+      html += `<div class="also-custom-label">
+        <span>— or —</span>
+        <p>Want something different? Here's a custom brief to share with our designers.</p>
+      </div>`;
+      html += renderCustomCard(selectedColor, selectedStyle, notes);
+    }
   } else {
     html += renderCustomCard(selectedColor, selectedStyle, notes);
   }
